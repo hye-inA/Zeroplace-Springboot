@@ -5,7 +5,7 @@ import com.demo.zeroplace.domain.studyroom.Studyroom;
 public class StudyroomResponse {
     private long id;
     private String name;
-    private int capacity;
+    private Integer capacity;
 
     public StudyroomResponse(long id, Studyroom studyroom) {
         this.id = id;
@@ -21,7 +21,7 @@ public class StudyroomResponse {
         return name;
     }
 
-    public int getCapacity() {
+    public Integer getCapacity() {
         return capacity;
     }
 }

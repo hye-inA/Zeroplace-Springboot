@@ -3,13 +3,14 @@ package com.demo.zeroplace.dto.request;
 public class StudyroomCreateRequest {
 
     private String name;
-    private int capacity;
+
+    private Integer capacity;
 
     public String getName() {
         return name;
     }
 
-    public int getCapacity() {
+    public Integer getCapacity() {
         return capacity;
     }
 }

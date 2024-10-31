@@ -8,6 +8,12 @@ public class MemberResponse {
     private String name;
     private String tel;
 
+    public MemberResponse(long id, String name, String tel) {
+        this.id = id;
+        this.name = name;
+        this.tel = tel;
+    }
+
     public MemberResponse(long id, Member member) {
         this.id = id;
         this.name = member.getName();
