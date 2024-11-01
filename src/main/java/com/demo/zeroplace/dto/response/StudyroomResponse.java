@@ -7,6 +7,12 @@ public class StudyroomResponse {
     private String name;
     private Integer capacity;
 
+    public StudyroomResponse(long id, String name, Integer capacity) {
+        this.id = id;
+        this.name = name;
+        this.capacity = capacity;
+    }
+
     public StudyroomResponse(long id, Studyroom studyroom) {
         this.id = id;
         this.name = studyroom.getName();

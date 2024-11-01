@@ -1,17 +1,13 @@
 package com.demo.zeroplace.controller;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.*;
 
-import com.demo.zeroplace.domain.member.Member;
 import com.demo.zeroplace.dto.request.MemberCreateRequest;
 import com.demo.zeroplace.dto.request.MemberUpdateRequest;
 import com.demo.zeroplace.dto.response.MemberResponse;
 import com.demo.zeroplace.service.MemberService;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -31,7 +27,7 @@ public class MemberController {
 
     @GetMapping("/member")
     public List<MemberResponse> getMembers() {
-        memberService.getMember();
+        return memberService.getMember();
     }
 
     // TODO : 사용자 존재 여부 확인 쿼리 구체화, 구체적인 예외 클래스 구현

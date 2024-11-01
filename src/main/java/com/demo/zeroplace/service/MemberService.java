@@ -1,13 +1,12 @@
 package com.demo.zeroplace.service;
 
-import com.demo.zeroplace.domain.member.Member;
+import org.springframework.jdbc.core.JdbcTemplate;
+import java.util.List;
+
 import com.demo.zeroplace.dto.request.MemberCreateRequest;
 import com.demo.zeroplace.dto.request.MemberUpdateRequest;
 import com.demo.zeroplace.dto.response.MemberResponse;
 import com.demo.zeroplace.repository.MemberRepository;
-import org.springframework.jdbc.core.JdbcTemplate;
-
-import java.util.List;
 
 public class MemberService {
     private final MemberRepository memberRepository;

@@ -22,4 +22,6 @@ public class Member {
     public String getTel() {
         return tel;
     }
+
+
 }
