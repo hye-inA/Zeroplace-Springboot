@@ -1,8 +1,8 @@
 package com.demo.zeroplace.controller;
 
-import java.util.List;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import com.demo.zeroplace.dto.request.MemberCreateRequest;
 import com.demo.zeroplace.dto.request.MemberUpdateRequest;
@@ -12,12 +12,10 @@ import com.demo.zeroplace.service.MemberService;
 
 @RestController
 public class MemberController {
-    private final JdbcTemplate jdbcTemplate;
     private final MemberService memberService;
 
-    public MemberController(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.memberService = new MemberService(jdbcTemplate);
+    public MemberController(MemberService memberService) {
+        this.memberService = memberService;
     }
 
     @PostMapping("/member")
@@ -33,8 +31,7 @@ public class MemberController {
     // TODO : 사용자 존재 여부 확인 쿼리 구체화, 구체적인 예외 클래스 구현
     @PutMapping("/member")
     public void updateMember(@RequestBody MemberUpdateRequest request) {
-        memberService.updateMember(jdbcTemplate, request);
-
+        memberService.updateMember(request);
     }
 
     //쿼리 파라미터가 1개라서 객체를 사용하지 않고 @RequestParam 사용

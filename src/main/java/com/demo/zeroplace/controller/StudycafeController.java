@@ -1,11 +1,12 @@
 package com.demo.zeroplace.controller;
 
-import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 import com.demo.zeroplace.dto.request.StudyroomCreateRequest;
 import com.demo.zeroplace.dto.response.StudyroomResponse;

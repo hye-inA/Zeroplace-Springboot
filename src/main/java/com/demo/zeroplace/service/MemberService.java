@@ -1,42 +1,48 @@
 package com.demo.zeroplace.service;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import java.util.List;
-
+import com.demo.zeroplace.domain.Member;
+import com.demo.zeroplace.repository.MemberRepository;
+import org.springframework.stereotype.Service;
 import com.demo.zeroplace.dto.request.MemberCreateRequest;
 import com.demo.zeroplace.dto.request.MemberUpdateRequest;
 import com.demo.zeroplace.dto.response.MemberResponse;
-import com.demo.zeroplace.repository.MemberRepository;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+
+
+@Service
 public class MemberService {
     private final MemberRepository memberRepository;
 
-    public MemberService(JdbcTemplate jdbcTemplate) {
-        this.memberRepository = new MemberRepository(jdbcTemplate);
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
-    public void saveMember(MemberCreateRequest request){
-        memberRepository.saveMember(request.getName(), request.getTel());
+    public void saveMember(MemberCreateRequest request) {
+        memberRepository.save(new Member(request.getName(), request.getTel()));
     }
 
-    public void updateMember(JdbcTemplate jdbcTemplate, MemberUpdateRequest request) {
-        if (memberRepository.isUserNotExist(jdbcTemplate, request.getId())) {
+    public void updateMember(MemberUpdateRequest request) {
+        Member member = memberRepository.findById(request.getId())
+                .orElseThrow(IllegalArgumentException::new);
+        member.updateTel(request.getTel());
+        memberRepository.save(member);
+    }
+
+    public List<MemberResponse> getMember() {
+        return memberRepository.findAll().stream()
+                .map(member -> new MemberResponse(member.getId(), member.getName(), member.getTel()))
+                .collect(Collectors.toList());
+    }
+
+    public void deleteMember(String tel) {
+        Member member = memberRepository.findByTel(tel);
+        if (member == null) {
             throw new IllegalArgumentException();
         }
 
-        memberRepository.updateMemberTel(jdbcTemplate, request.getTel(), request.getId());
-    }
-
-    public List<MemberResponse> getMember(){
-        return memberRepository.getUserResponse();
-    }
-
-    public void deleteMember(String tel){
-
-        if (memberRepository.isUserNotExist(tel)) {
-            throw new IllegalArgumentException();
-        }
-
-        memberRepository.deleteMemberByTel(tel);
+        memberRepository.delete(member);
     }
 }

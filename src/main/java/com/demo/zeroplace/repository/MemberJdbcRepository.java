@@ -3,14 +3,16 @@ package com.demo.zeroplace.repository;
 import com.demo.zeroplace.dto.response.MemberResponse;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public class MemberRepository {
+@Repository
+public class MemberJdbcRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public MemberRepository(JdbcTemplate jdbcTemplate) {
+    public MemberJdbcRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -20,7 +22,7 @@ public class MemberRepository {
     }
 
     public List<MemberResponse> getUserResponse() {
-        String sql = "SELECT * FROM member";
+        String sql = "SELECT * FROM member"; // => findAll()
         return jdbcTemplate.query(sql,
                 (rs, rowNum) -> new MemberResponse(
                         rs.getLong("id"),
@@ -30,12 +32,12 @@ public class MemberRepository {
         );
     }
 
-    public boolean isUserNotExist(JdbcTemplate jdbcTemplate, long id) {
+    public boolean isUserNotExist(long id) {
         String sql = "SELECT * FROM member WHEHE id = ?";
         return jdbcTemplate.query(sql, (rs, rowNum) -> 0, id).isEmpty();
     }
 
-    public void updateMemberTel(JdbcTemplate jdbcTemplate, String tel,long id){
+    public void updateMemberTel(String tel, long id){
         String sql = "UPDATE member SET tel = ? WHERE id = ?";
         jdbcTemplate.update(sql, tel, id);
     }

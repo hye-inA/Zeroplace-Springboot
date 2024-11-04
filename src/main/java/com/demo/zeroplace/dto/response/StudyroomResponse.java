@@ -1,6 +1,6 @@
 package com.demo.zeroplace.dto.response;
 
-import com.demo.zeroplace.domain.studyroom.Studyroom;
+import com.demo.zeroplace.domain.Studyroom;
 
 public class StudyroomResponse {
     private long id;

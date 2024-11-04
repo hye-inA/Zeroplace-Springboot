@@ -1,6 +1,6 @@
 package com.demo.zeroplace.dto.response;
 
-import com.demo.zeroplace.domain.member.Member;
+import com.demo.zeroplace.domain.Member;
 
 public class MemberResponse {
 
@@ -8,7 +8,7 @@ public class MemberResponse {
     private String name;
     private String tel;
 
-    public MemberResponse(long id, String name, String tel) {
+    public MemberResponse(Long id, String name, String tel) {
         this.id = id;
         this.name = name;
         this.tel = tel;
@@ -18,6 +18,12 @@ public class MemberResponse {
         this.id = id;
         this.name = member.getName();
         this.tel = member.getTel();
+    }
+
+    public MemberResponse(Member member) {
+        this.id = id;
+        this.name = name;
+        this.tel = tel;
     }
 
     public long getId() {

@@ -1,13 +1,13 @@
 package com.demo.zeroplace.repository;
 
-
 import com.demo.zeroplace.dto.response.StudyroomResponse;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-
+@Repository
 public class StudyroomRepository {
 
     private final JdbcTemplate jdbcTemplate;
