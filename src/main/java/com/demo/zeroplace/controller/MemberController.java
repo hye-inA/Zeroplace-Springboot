@@ -1,15 +1,21 @@
 package com.demo.zeroplace.controller;
 
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.demo.zeroplace.dto.request.MemberCreateRequest;
 import com.demo.zeroplace.dto.request.MemberUpdateRequest;
 import com.demo.zeroplace.dto.response.MemberResponse;
 import com.demo.zeroplace.service.MemberService;
 
-
+@Slf4j
 @RestController
 public class MemberController {
     private final MemberService memberService;
@@ -19,8 +25,20 @@ public class MemberController {
     }
 
     @PostMapping("/member")
-    public void saveMember(@RequestBody MemberCreateRequest request) {
-       memberService.saveMember(request);
+    public Map<String, String> saveMember(@RequestBody @Valid MemberCreateRequest request, BindingResult result) {
+        log.info("requests={}", request.toString());
+        if(result.hasErrors()) {
+            List<FieldError> fieldErrors = result.getFieldErrors();
+            FieldError firstFieldError = fieldErrors.get(0);
+            String fieldName = firstFieldError.getField();
+            String errorMessage = firstFieldError.getDefaultMessage();
+
+            Map<String, String> error = new HashMap<>();
+            error.put(fieldName, errorMessage);
+            return error;
+        }
+        memberService.saveMember(request);
+        return Map.of();
     }
 
     @GetMapping("/member")
