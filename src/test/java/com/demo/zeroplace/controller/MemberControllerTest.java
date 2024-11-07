@@ -11,7 +11,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import javax.print.attribute.standard.Media;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -51,6 +50,22 @@ class MemberControllerTest {
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(jsonPath("$.name").value("이름을 입력해주세요"))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("/member 요청시 잘못된 요청이 들어오면 JSON 형태 에러 응답을 보낸다")
+    void saveMember3() throws Exception {
+        // 보낼 데이터 - 사용자 이름, 전화번호
+
+        // expected
+        mockMvc.perform(post("/member")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"\", \"tel\": \"전화번호\"}")
+                )
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.message").value("잘못된 요청입니다"))
                 .andDo(MockMvcResultHandlers.print());
     }
 }
