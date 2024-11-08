@@ -28,6 +28,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 class MemberControllerTest {
 
+    //ObjectMapper에 대한 빈 주입
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -54,7 +58,6 @@ class MemberControllerTest {
                 .tel("전화번호")
                 .build();
 
-        ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(request);
 
 
@@ -72,12 +75,18 @@ class MemberControllerTest {
     @Test
     @DisplayName("/member 요청시 잘못된 요청이 들어오면 JSON 형태 에러 응답을 보낸다")
     void saveMember2() throws Exception {
-        // 보낼 데이터 - 사용자 이름, 전화번호
+        // given
+        MemberCreateRequest request = MemberCreateRequest.builder()
+                .tel("전화번호")
+                .build();
+
+        String json = objectMapper.writeValueAsString(request);
+
 
         // expected
         mockMvc.perform(post("/member")
                         .contentType(APPLICATION_JSON)
-                        .content("{\"name\":\"\", \"tel\": \"전화번호\"}")
+                        .content(json)
                 )
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("400"))
@@ -88,13 +97,19 @@ class MemberControllerTest {
 
     @Test
     @DisplayName("/member 요청시 요청한 json이 DB에 값이 저장된다")
-    void saveMember3() throws Exception {
-        // 보낼 데이터 - 사용자 이름, 전화번호
+    void saveMemberJsonToDB() throws Exception {
+        // given
+        MemberCreateRequest request = MemberCreateRequest.builder()
+                .name("이름")
+                .tel("전화번호")
+                .build();
+
+        String json = objectMapper.writeValueAsString(request);
 
         // when - 이러한 요청을 했을때
         mockMvc.perform(post("/member")
                         .contentType(APPLICATION_JSON)
-                        .content("{\"name\":\"이름\", \"tel\": \"전화번호\"}")
+                        .content(json)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print());
