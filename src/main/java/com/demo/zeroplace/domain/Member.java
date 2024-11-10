@@ -1,6 +1,7 @@
 package com.demo.zeroplace.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 
 @Entity
 public class Member {
@@ -14,7 +15,7 @@ public class Member {
 
     protected Member() {
     }
-
+    @Builder
     public Member(String name, String tel) {
         this.name = name;
         this.tel = tel;

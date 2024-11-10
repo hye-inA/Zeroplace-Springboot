@@ -1,5 +1,6 @@
 package com.demo.zeroplace.controller;
 
+import com.demo.zeroplace.domain.Member;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -22,14 +23,19 @@ public class MemberController {
     }
 
     @PostMapping("/member")
-    public Map<String, String> saveMember(@RequestBody @Valid MemberCreateRequest request) {
+    public void saveMember(@RequestBody @Valid MemberCreateRequest request) {
         memberService.saveMember(request);
-        return Map.of();
+    }
+
+    @GetMapping("/member/{memberId}")
+    public Member getMember(@PathVariable(name = "memberId") Long id) {
+        Member member = memberService.getMember(id);
+        return member;
     }
 
     @GetMapping("/member")
     public List<MemberResponse> getMembers() {
-        return memberService.getMember();
+        return memberService.getMembers();
     }
 
     // TODO : 사용자 존재 여부 확인 쿼리 구체화, 구체적인 예외 클래스 구현

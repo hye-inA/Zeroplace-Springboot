@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 
 import static org.springframework.http.MediaType.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 @AutoConfigureMockMvc
@@ -67,7 +68,7 @@ class MemberControllerTest {
                         .content(json)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("{}"))
+                .andExpect(MockMvcResultMatchers.content().string(""))
                 .andDo(MockMvcResultHandlers.print());
     }
 
@@ -120,5 +121,25 @@ class MemberControllerTest {
         Member member = memberRepository.findAll().get(0);
         Assertions.assertEquals("이름", member.getName());
         Assertions.assertEquals("전화번호", member.getTel());
+    }
+
+    @Test
+    @DisplayName("글 1개 조회")
+    void test4() throws Exception {
+        // given
+        Member member = Member.builder()
+                .name("hyein")
+                .tel("1111")
+                .build();
+        memberRepository.save(member);
+
+        // expected
+        mockMvc.perform(get("/member/{memberId}", member.getId())
+                        .contentType(APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$.id").value(member.getId()))
+                .andExpect(jsonPath("$.name").value("hyein"))
+                .andExpect(jsonPath("$.tel").value("1111"))
+                .andDo(MockMvcResultHandlers.print());
     }
 }

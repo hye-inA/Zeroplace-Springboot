@@ -1,7 +1,9 @@
 package com.demo.zeroplace.dto.response;
 
 import com.demo.zeroplace.domain.Member;
+import lombok.Getter;
 
+@Getter
 public class MemberResponse {
 
     private long id;
