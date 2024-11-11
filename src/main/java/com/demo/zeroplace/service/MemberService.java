@@ -1,12 +1,11 @@
 package com.demo.zeroplace.service;
 
 import com.demo.zeroplace.domain.Member;
-import com.demo.zeroplace.repository.MemberRepository;
-import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import com.demo.zeroplace.dto.request.MemberCreateRequest;
 import com.demo.zeroplace.dto.request.MemberUpdateRequest;
 import com.demo.zeroplace.dto.response.MemberResponse;
+import com.demo.zeroplace.repository.MemberRepository;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -50,17 +49,24 @@ public class MemberService {
     }
 
     @Transactional
-    public Member getMember(Long id){
+    public MemberResponse getMember(Long id){
         Member member = memberRepository.findById(id)
-                .orElseThrow(IllegalAccessError::new);
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다"));
 
-        return member;
-
+        return MemberResponse.builder()
+                .id(member.getId())
+                .name(member.getName())
+                .tel(member.getTel())
+                .build();
     }
     @Transactional(readOnly = true)
-    public List<MemberResponse> getMembers() {
+    public List<MemberResponse> getList() {
         return memberRepository.findAll().stream()
-                .map(member -> new MemberResponse(member.getId(), member.getName(), member.getTel()))
+                .map(member -> MemberResponse.builder()
+                        .id(member.getId())
+                        .name(member.getName())
+                        .tel(member.getTel())
+                        .build())
                 .collect(Collectors.toList());
     }
     @Transactional

@@ -2,15 +2,18 @@ package com.demo.zeroplace.service;
 
 import com.demo.zeroplace.domain.Member;
 import com.demo.zeroplace.dto.request.MemberCreateRequest;
+import com.demo.zeroplace.dto.response.MemberResponse;
 import com.demo.zeroplace.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest
 class MemberServiceTest {
 
@@ -57,12 +60,36 @@ class MemberServiceTest {
         memberRepository.save(requestMember);
 
         // when
-        Member member = memberService.getMember(requestMember.getId());
+        MemberResponse response = memberService.getMember(requestMember.getId());
 
         // then
-        assertNotNull(member);
-        assertEquals("hyein", member.getName());
-        assertEquals("1111", member.getTel());
+        assertNotNull(response);
+        assertEquals(1L, memberRepository.count());
+        assertEquals("hyein", response.getName());
+        assertEquals("1111", response.getTel());
+    }
+
+    @Test
+    @DisplayName("사용자 여러명 조회")
+    void test3() {
+        // given
+        Member requestMember1 = Member.builder()
+                .name("hyein")
+                .tel("1111")
+                .build();
+        memberRepository.save(requestMember1);
+
+        Member requestMember2 = Member.builder()
+                .name("hymin")
+                .tel("2222")
+                .build();
+        memberRepository.save(requestMember2);
+
+        // when
+        List<MemberResponse> response = memberService.getList();
+
+        // then
+        assertEquals(2L, memberRepository.count());
     }
 
 }

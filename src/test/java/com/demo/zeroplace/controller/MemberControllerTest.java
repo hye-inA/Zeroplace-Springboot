@@ -5,25 +5,21 @@ import com.demo.zeroplace.dto.request.MemberCreateRequest;
 import com.demo.zeroplace.repository.MemberRepository;
 import com.demo.zeroplace.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.web.bind.annotation.PostMapping;
 
-
-import static org.springframework.http.MediaType.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -69,7 +65,7 @@ class MemberControllerTest {
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string(""))
-                .andDo(MockMvcResultHandlers.print());
+                .andDo(print());
     }
 
 
@@ -93,7 +89,7 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.code").value("400"))
                 .andExpect(jsonPath("$.message").value("잘못된 요청입니다"))
                 .andExpect(jsonPath("$.validation.name").value("이름을 입력해주세요"))
-                .andDo(MockMvcResultHandlers.print());
+                .andDo(print());
     }
 
     @Test
@@ -113,7 +109,7 @@ class MemberControllerTest {
                         .content(json)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andDo(MockMvcResultHandlers.print());
+                .andDo(print());
 
         // then - 결과 : DB의 행 한줄 생성 ( 데이터 1개 생성 )
         Assertions.assertEquals(1L, memberRepository.count());
@@ -128,18 +124,53 @@ class MemberControllerTest {
     void test4() throws Exception {
         // given
         Member member = Member.builder()
-                .name("hyein")
+                .name("hyein11111111")
                 .tel("1111")
                 .build();
         memberRepository.save(member);
+
+        // 클라이언트 요구사항
+        // json 응답에서 name값 길이를 최대 10글자로 해주세요
+        // Member entity <-> MemberResponse class
+        // expected
+
 
         // expected
         mockMvc.perform(get("/member/{memberId}", member.getId())
                         .contentType(APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(jsonPath("$.id").value(member.getId()))
-                .andExpect(jsonPath("$.name").value("hyein"))
+                .andExpect(jsonPath("$.name").value("hyein11111"))
                 .andExpect(jsonPath("$.tel").value("1111"))
-                .andDo(MockMvcResultHandlers.print());
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 여러개 조회")
+    void test5() throws Exception {
+        // given
+        Member member1 = Member.builder()
+                .name("name1")
+                .tel("tel1")
+                .build();
+        memberRepository.save(member1);
+
+        Member member2 = Member.builder()
+                .name("name2")
+                .tel("tel2")
+                .build();
+        memberRepository.save(member2);
+
+        // expected
+        mockMvc.perform(get("/member")
+                        .contentType(APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$.length()", Matchers.is(2)))
+                .andExpect(jsonPath("$.[0].id").value(member1.getId()))
+                .andExpect(jsonPath("$.[0].name").value("name1"))
+                .andExpect(jsonPath("$.[0].tel").value("tel1"))
+                .andDo(print());
+
+
     }
 }

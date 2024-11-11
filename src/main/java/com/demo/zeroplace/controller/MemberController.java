@@ -1,17 +1,14 @@
 package com.demo.zeroplace.controller;
 
-import com.demo.zeroplace.domain.Member;
+import com.demo.zeroplace.dto.request.MemberCreateRequest;
+import com.demo.zeroplace.dto.request.MemberUpdateRequest;
+import com.demo.zeroplace.dto.response.MemberResponse;
+import com.demo.zeroplace.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-
-import com.demo.zeroplace.dto.request.MemberCreateRequest;
-import com.demo.zeroplace.dto.request.MemberUpdateRequest;
-import com.demo.zeroplace.dto.response.MemberResponse;
-import com.demo.zeroplace.service.MemberService;
 
 @Slf4j
 @RestController
@@ -28,14 +25,13 @@ public class MemberController {
     }
 
     @GetMapping("/member/{memberId}")
-    public Member getMember(@PathVariable(name = "memberId") Long id) {
-        Member member = memberService.getMember(id);
-        return member;
+    public MemberResponse getMember(@PathVariable Long memberId ) {
+        return memberService.getMember(memberId);
     }
 
     @GetMapping("/member")
-    public List<MemberResponse> getMembers() {
-        return memberService.getMembers();
+    public List<MemberResponse> getList() {
+        return memberService.getList();
     }
 
     // TODO : 사용자 존재 여부 확인 쿼리 구체화, 구체적인 예외 클래스 구현
