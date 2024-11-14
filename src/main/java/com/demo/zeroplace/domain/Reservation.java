@@ -16,8 +16,6 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer numOfPeople;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -31,9 +29,8 @@ public class Reservation {
     private LocalDateTime endTime;
 
     @Builder
-    public Reservation(Long id, Integer numOfPeople, Member member, Studyroom studyroom, LocalDateTime startTime, LocalDateTime endTime) {
+    public Reservation(Long id, Member member, Studyroom studyroom, LocalDateTime startTime, LocalDateTime endTime) {
         this.id = id;
-        this.numOfPeople = numOfPeople;
         this.member = member;
         this.studyroom = studyroom;
         this.startTime = startTime;
