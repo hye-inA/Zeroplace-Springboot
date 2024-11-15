@@ -42,9 +42,9 @@ public class MemberController {
 
     //쿼리 파라미터가 1개라서 객체를 사용하지 않고 @RequestParam 사용
     // TODO : 사용자의 이름도 변경될 가능성 있는 데이터임으로 DTO로 변경
-    @DeleteMapping("/member")
-    public void deleteMember(@RequestParam String tel) {
-       memberService.deleteMember(tel);
+    @DeleteMapping("/member/{memberId}")
+    public void deleteMember(@PathVariable Long memberId) {
+       memberService.deleteMember(memberId);
     }
 
 }

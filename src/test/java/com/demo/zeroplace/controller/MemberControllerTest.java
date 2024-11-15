@@ -17,10 +17,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @AutoConfigureMockMvc
 @SpringBootTest
 class MemberControllerTest {
@@ -32,7 +33,7 @@ class MemberControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    //DB 저장 테스트를 위한 주입
+     //DB 저장 테스트를 위한 주입
     @Autowired
     private MemberRepository memberRepository;
 
@@ -120,7 +121,7 @@ class MemberControllerTest {
     }
 
     @Test
-    @DisplayName("글 1개 조회")
+    @DisplayName("사용자 1명 조회")
     void test4() throws Exception {
         // given
         Member member = Member.builder()
@@ -146,20 +147,18 @@ class MemberControllerTest {
     }
 
     @Test
-    @DisplayName("글 여러개 조회")
+    @DisplayName("사용자 여러명 조회")
     void test5() throws Exception {
         // given
-        Member member1 = Member.builder()
+        Member member1 = memberRepository.save(Member.builder()
                 .name("name1")
                 .tel("tel1")
-                .build();
-        memberRepository.save(member1);
+                .build());
 
-        Member member2 = Member.builder()
+        Member member2 = memberRepository.save(Member.builder()
                 .name("name2")
                 .tel("tel2")
-                .build();
-        memberRepository.save(member2);
+                .build());
 
         // expected
         mockMvc.perform(get("/member")
@@ -169,8 +168,22 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.[0].id").value(member1.getId()))
                 .andExpect(jsonPath("$.[0].name").value("name1"))
                 .andExpect(jsonPath("$.[0].tel").value("tel1"))
+                .andExpect(jsonPath("$.[1].id").value(member2.getId()))
+                .andExpect(jsonPath("$.[1].name").value("name2"))
+                .andExpect(jsonPath("$.[1].tel").value("tel2"))
                 .andDo(print());
 
 
     }
+
+    @Test
+    @DisplayName("존재하지 않는 사용자 조회")
+    void test() throws Exception {
+        // expected
+        mockMvc.perform(get("/member/{memberId}", 1L)
+                .contentType(APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
 }

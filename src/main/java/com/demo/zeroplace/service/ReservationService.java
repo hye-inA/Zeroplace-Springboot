@@ -4,10 +4,12 @@ import com.demo.zeroplace.domain.Member;
 import com.demo.zeroplace.domain.Reservation;
 import com.demo.zeroplace.domain.Studyroom;
 import com.demo.zeroplace.dto.request.ReservationCreateRequest;
+import com.demo.zeroplace.exception.MemberNotFound;
+import com.demo.zeroplace.exception.ReservationNotFound;
+import com.demo.zeroplace.exception.StudyroomNotFound;
 import com.demo.zeroplace.repository.MemberRepository;
 import com.demo.zeroplace.repository.ReservationRepository;
 import com.demo.zeroplace.repository.StudyroomRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,10 +35,10 @@ public class ReservationService {
     @Transactional
     public void createReservation(ReservationCreateRequest request) {
         Member member = memberRepository.findById(request.getMemberId())
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new MemberNotFound());
 
         Studyroom studyroom = studyroomRepository.findById(request.getStudyroomId())
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 스터디룸입니다."));
+                .orElseThrow(() -> new StudyroomNotFound());
 
         Reservation reservation = Reservation.builder()
                 .member(member)
@@ -59,5 +61,11 @@ public class ReservationService {
         if (exists) {
             throw new IllegalArgumentException("해당 시간에 이미 예약이 존재합니다");
         }
+    }
+
+    public void delete(Long id) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(ReservationNotFound::new);
+        reservationRepository.delete(reservation);
     }
 }

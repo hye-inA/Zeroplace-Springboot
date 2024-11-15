@@ -14,6 +14,11 @@ public class MemberResponse {
     private String name;
     private String tel;
 
+    public MemberResponse(Member member){
+        this.id = member.getId();
+        this.name = member.getName();
+        this.tel = member.getTel();
+    }
     @Builder
     public MemberResponse(Long id, String name, String tel) {
         this.id = id;

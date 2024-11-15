@@ -3,6 +3,7 @@ package com.demo.zeroplace.service;
 import com.demo.zeroplace.domain.Member;
 import com.demo.zeroplace.dto.request.MemberCreateRequest;
 import com.demo.zeroplace.dto.response.MemberResponse;
+import com.demo.zeroplace.exception.MemberNotFound;
 import com.demo.zeroplace.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,8 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 class MemberServiceTest {
 
@@ -73,17 +74,16 @@ class MemberServiceTest {
     @DisplayName("사용자 여러명 조회")
     void test3() {
         // given
-        Member requestMember1 = Member.builder()
-                .name("hyein")
-                .tel("1111")
-                .build();
-        memberRepository.save(requestMember1);
-
-        Member requestMember2 = Member.builder()
-                .name("hymin")
-                .tel("2222")
-                .build();
-        memberRepository.save(requestMember2);
+        memberRepository.saveAll(List.of(
+                Member.builder()
+                        .name("hyein")
+                        .tel("1111")
+                        .build(),
+                Member.builder()
+                        .name("hyemin")
+                        .tel("2222")
+                        .build()
+        ));
 
         // when
         List<MemberResponse> response = memberService.getList();
@@ -92,4 +92,20 @@ class MemberServiceTest {
         assertEquals(2L, memberRepository.count());
     }
 
+    @Test
+    @DisplayName("사용자 1명 조회 - 실패 케이스(존재하지 않는 사용자) ")
+    void test7() throws Exception {
+        // given
+        Member member = Member.builder()
+                .name("허혜인")
+                .tel("1234")
+                .build();
+        memberRepository.save(member); // member.getId -> primary_id = 1
+
+        // expected
+        assertThrows(MemberNotFound.class, () -> {
+            memberService.getMember(member.getId() + 1L);
+        });
+
+    }
 }

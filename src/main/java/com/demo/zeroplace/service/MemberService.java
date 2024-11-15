@@ -4,6 +4,7 @@ import com.demo.zeroplace.domain.Member;
 import com.demo.zeroplace.dto.request.MemberCreateRequest;
 import com.demo.zeroplace.dto.request.MemberUpdateRequest;
 import com.demo.zeroplace.dto.response.MemberResponse;
+import com.demo.zeroplace.exception.MemberNotFound;
 import com.demo.zeroplace.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +52,7 @@ public class MemberService {
     @Transactional
     public MemberResponse getMember(Long id){
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다"));
+                .orElseThrow(() -> new MemberNotFound());
 
         return MemberResponse.builder()
                 .id(member.getId())
@@ -62,19 +63,13 @@ public class MemberService {
     @Transactional(readOnly = true)
     public List<MemberResponse> getList() {
         return memberRepository.findAll().stream()
-                .map(member -> MemberResponse.builder()
-                        .id(member.getId())
-                        .name(member.getName())
-                        .tel(member.getTel())
-                        .build())
+                .map(member -> new MemberResponse(member))
                 .collect(Collectors.toList());
     }
     @Transactional
-    public void deleteMember(String tel) {
-        Member member = memberRepository.findByTel(tel);
-        if (member == null) {
-            throw new IllegalArgumentException();
-        }
+    public void deleteMember(Long id) {
+        Member member = memberRepository.findById(id)
+                        .orElseThrow(MemberNotFound::new);
 
         memberRepository.delete(member);
     }

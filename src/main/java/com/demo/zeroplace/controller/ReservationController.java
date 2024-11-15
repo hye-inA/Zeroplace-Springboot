@@ -15,9 +15,9 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @GetMapping("/test")
-    public String test(UserSession userSession) {
-        log.info(">>>{}", userSession.name);
-        return userSession.name;
+    public Long test(UserSession userSession) {
+        log.info(">>>{}", userSession.id);
+        return userSession.id;
     }
 
     @GetMapping("/test2")
@@ -35,6 +35,11 @@ public class ReservationController {
         if (authorization.equals("hyein")) {
         reservationService.createReservation(request);
         }
+    }
+
+    @DeleteMapping("/reservation/{reservationId}")
+    public void deleteReservation(@PathVariable Long reservationId){
+        reservationService.delete(reservationId);
     }
 
 }

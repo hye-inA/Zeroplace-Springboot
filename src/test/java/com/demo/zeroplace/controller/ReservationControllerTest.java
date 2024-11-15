@@ -7,7 +7,9 @@ import com.demo.zeroplace.dto.request.ReservationCreateRequest;
 import com.demo.zeroplace.repository.MemberRepository;
 import com.demo.zeroplace.repository.ReservationRepository;
 import com.demo.zeroplace.repository.StudyroomRepository;
+import com.demo.zeroplace.service.ReservationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,15 +17,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDateTime;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -38,6 +41,9 @@ class ReservationControllerTest {
 
     @Autowired
     private ReservationRepository reservationRepository;
+
+    @Autowired
+    private ReservationService reservationService;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -83,7 +89,7 @@ class ReservationControllerTest {
                         .contentType(APPLICATION_JSON)
                         .content(json)
                 )
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(status().isOk())
                 .andDo(print());
 
         // then - 결과 : DB의 행 한줄 생성 ( 데이터 1개 생성 )
@@ -95,5 +101,41 @@ class ReservationControllerTest {
         assertNotNull(reservation.getStartTime());
         assertNotNull(reservation.getEndTime());
     }
+
+    @Test
+    @DisplayName("예약 삭제")
+    void test() throws Exception {
+        // given
+        Member member = Member.builder()
+                .name("아무개씨")
+                .tel("010-1234-5678")
+                .build();
+        memberRepository.save(member);
+
+        Studyroom studyroom = Studyroom.builder()
+                .name("스터디룸2")
+                .capacity(4)
+                .build();
+        studyroomRepository.save(studyroom);
+
+        Reservation reservation = Reservation.builder()
+                .member(member)
+                .studyroom(studyroom)
+                .startTime(LocalDateTime.now().plusHours(1))
+                .endTime(LocalDateTime.now().plusHours(3))
+                .build();
+        reservationRepository.save(reservation);
+
+        // when
+        mockMvc.perform(delete("/reservation/{reservationId}", reservation.getId())
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        // then
+        Assertions.assertEquals(0, reservationRepository.count());
+    }
+
+
 
 }
