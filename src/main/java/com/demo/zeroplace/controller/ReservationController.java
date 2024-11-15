@@ -1,5 +1,6 @@
 package com.demo.zeroplace.controller;
 
+import com.demo.zeroplace.config.data.UserSession;
 import com.demo.zeroplace.dto.request.ReservationCreateRequest;
 import com.demo.zeroplace.service.ReservationService;
 import jakarta.validation.Valid;
@@ -14,9 +15,14 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @GetMapping("/test")
-    public String test(@RequestAttribute("userName") String userName) {
-        log.info(">>>{}", userName);
-        return "hello";
+    public String test(UserSession userSession) {
+        log.info(">>>{}", userSession.name);
+        return userSession.name;
+    }
+
+    @GetMapping("/test2")
+    public String test2() {
+        return "인증이 필요없는 페이지";
     }
 
 //    @GetMapping("/exceptapi")
