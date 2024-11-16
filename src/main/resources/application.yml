@@ -3,17 +3,64 @@ spring:
   devtools:
     livereload:
       enabled: true
-#h2 db
+
+  config:
+    activate:
+      on-profile: local
+
+  #h2 DB
   datasource:
-    url: "jdbc:h2:./testdb"
+    url: "jdbc:h2:mem:testdb;MODE=MYSQL;"
     username: "test"
     password: "test"
     driver-class-name: org.h2.Driver
-#JPA
+
+  #JPA
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+        show_sql: true
+      open-in-view: false
+
+    defer-datasource-initialization: true
+    sql:
+      init-model: always
+
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+---
+spring:
+  devtools:
+    livereload:
+      enabled: true
+
+  #porfile
+  config:
+    activate:
+      on-profile: dev
+
+  #MySQL DB
+  datasource:
+    url: "jdbc:mysql://localhost/studyroom"
+    username: "root"
+    password: "u78eytju5!"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  #JPA
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        show_sql: true
+      open-in-view: false
