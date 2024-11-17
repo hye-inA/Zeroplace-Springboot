@@ -1,6 +1,7 @@
 package com.demo.zeroplace.controller;
 
 import com.demo.zeroplace.domain.Member;
+import com.demo.zeroplace.domain.Session;
 import com.demo.zeroplace.dto.request.Login;
 import com.demo.zeroplace.repository.MemberRepository;
 import com.demo.zeroplace.repository.SessionRepository;
@@ -13,10 +14,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -63,7 +65,7 @@ class AuthControllerTest {
 
         // expected
         mockMvc.perform(post("/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
+                    .contentType(APPLICATION_JSON)
                     .content(json))
                 .andExpect(status().isOk())
                 .andDo(print());
@@ -90,7 +92,7 @@ class AuthControllerTest {
 
         // expected
         mockMvc.perform(post("/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
                 .andDo(print());
@@ -118,12 +120,50 @@ class AuthControllerTest {
 
         // expected
         mockMvc.perform(post("/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken", Matchers.notNullValue()))
                 .andDo(print());
+    }
 
+    @Test
+    @DisplayName("로그인 후 권한이 필요한 페이지 접속한다 /test")
+    void test4() throws Exception {
+        // given
+        Member member = Member.builder()
+                .name("허혜인")
+                .email("hyein99@gmail.com")
+                .password("1234")
+                .build();
+        Session session = member.addSession();
+        memberRepository.save(member);
 
+        // expected
+        mockMvc.perform(get("/test")
+                        .header("Authorization", session.getAccessToken())
+                    .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("로그인 후 검증되지 않은 세션값으로 권한이 필요한 페이지에 접속할 수 없다")
+    void test5() throws Exception {
+        // given
+        Member member = Member.builder()
+                .name("허혜인")
+                .email("hyein99@gmail.com")
+                .password("1234")
+                .build();
+        Session session = member.addSession();
+        memberRepository.save(member);
+
+        // expected
+        mockMvc.perform(get("/test")
+                        .header("Authorization", session.getAccessToken() + "-other")
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
     }
 }
