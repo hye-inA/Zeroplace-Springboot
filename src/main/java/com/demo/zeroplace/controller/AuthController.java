@@ -1,9 +1,8 @@
 package com.demo.zeroplace.controller;
 
-import com.demo.zeroplace.domain.Member;
 import com.demo.zeroplace.dto.request.Login;
-import com.demo.zeroplace.exception.InValidSigninInformation;
-import com.demo.zeroplace.repository.MemberRepository;
+import com.demo.zeroplace.dto.response.SessionResponse;
+import com.demo.zeroplace.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,20 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final MemberRepository memberRepository;
+    private final AuthService authService;
     @PostMapping("/auth/login")
-    public Member login(@RequestBody Login login) {
-        // json으로 아이디/비밀번호
-        log.info(">>>login={}", login);
+    public SessionResponse login(@RequestBody Login login) {
 
-        // DB에서 조회
-        Member member = memberRepository.findByEmailAndPassword(login.getEmail(), login.getPassword())
-                .orElseThrow(()-> new InValidSigninInformation());
-
-        return member;
-
-        // 토큰을 응답
-
-
+        String accessToken = authService.signin(login);
+        return new SessionResponse(accessToken);
     }
 }

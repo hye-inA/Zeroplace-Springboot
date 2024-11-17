@@ -1,6 +1,7 @@
 package com.demo.zeroplace.controller;
 
 import com.demo.zeroplace.dto.response.ErrorResponse;
+import com.demo.zeroplace.exception.InValidSigninInformation;
 import com.demo.zeroplace.exception.MemberNotFound;
 import com.demo.zeroplace.exception.ReservationNotFound;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,18 @@ public class ExceptionController {
         for (FieldError fieldError : e.getFieldErrors()) {
             response.addValidation(fieldError.getField(), fieldError.getDefaultMessage());
         }
+        return response;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InValidSigninInformation.class)
+    @ResponseBody
+    public ErrorResponse InvalidLogin(InValidSigninInformation e) {
+        ErrorResponse response = ErrorResponse.builder()
+                .code("400")
+                .message(e.getMessage())
+                .build();
+
         return response;
     }
 
