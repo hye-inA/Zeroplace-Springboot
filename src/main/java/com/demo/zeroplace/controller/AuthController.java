@@ -1,18 +1,17 @@
 package com.demo.zeroplace.controller;
 
-import com.demo.zeroplace.dto.request.Login;
-import com.demo.zeroplace.dto.response.SessionResponse;
+
 import com.demo.zeroplace.service.AuthService;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.crypto.SecretKey;
-import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -20,19 +19,31 @@ import java.util.Base64;
 public class AuthController {
 
     private final AuthService authService;
+    // 로그인 로직은 BasicAuthenticationFilter에서 처리되므로 제거
 
-    private final String KEY = ;
-    @PostMapping("/auth/login")
-    public SessionResponse login(@RequestBody Login login) {
-        Long memberId = authService.signin(login);
+    // 토큰 갱신 엔드포인트 추가
+    @PostMapping("/auth/refresh")
+    public ResponseEntity<?> refreshToken(@RequestHeader("Authorization") String refreshToken) {
+        try {
+            // Bearer 제거
+            refreshToken = refreshToken.substring(7);
+            // 토큰 갱신 로직
+            String newAccessToken = authService.refreshAccessToken(refreshToken);
 
-        SecretKey key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(KEY));
+            Map<String, String> response = new HashMap<>();
+            response.put("accessToken", newAccessToken);
 
-        String jws = Jwts.builder()
-                .subject(String.valueOf(memberId))
-                .signWith(key)
-                .compact();
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Invalid refresh token"));
+        }
+    }
 
-        return new SessionResponse(jws);
+    // 로그아웃 엔드포인트 추가
+    @PostMapping("/auth/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
+        // 로그아웃 처리 로직
+        return ResponseEntity.ok().build();
     }
 }

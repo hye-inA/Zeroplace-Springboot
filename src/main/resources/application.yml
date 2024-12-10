@@ -1,4 +1,3 @@
-#Devlopment auto restart
 spring:
   devtools:
     livereload:
@@ -24,43 +23,19 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.H2Dialect
         show_sql: true
-      open-in-view: false
-
+    open-in-view: false
     defer-datasource-initialization: true
-    sql:
-      init-model: always
 
+  sql:
+    init:
+      mode: always
+      platform: h2
 
   h2:
     console:
       enabled: true
       path: /h2-console
 
----
-spring:
-  devtools:
-    livereload:
-      enabled: true
-
-  #porfile
-  config:
-    activate:
-      on-profile: dev
-
-  #MySQL DB
-  datasource:
-    url: "jdbc:mysql://localhost/studyroom"
-    username: "root"
-    password: 
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-  #JPA
-  jpa:
-    hibernate:
-      ddl-auto: none
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.MySQL8Dialect
-        show_sql: true
-      open-in-view: false
+  security:
+    basic:
+      enabled: false
