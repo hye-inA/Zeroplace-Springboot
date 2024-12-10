@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "jwt")
 @RequiredArgsConstructor
 public class JwtProperties {
-    private String secretKey = "aHllaW4xMjM0NTY3ODkwYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXo=";
+    private String secretKey = "";
     private long accessTokenValidityInSeconds = 300; // 5분
     private long refreshTokenValidityInSeconds = 86400; // 24시간
 
